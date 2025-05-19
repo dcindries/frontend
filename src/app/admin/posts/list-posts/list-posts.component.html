@@ -1,0 +1,32 @@
+<div class="admin-page">
+    <h3>Administración de Publicaciones</h3>
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Contenido</th>
+            <th>Grupo</th>
+            <th>Autor</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of posts">
+            <td>{{ p.id }}</td>
+            <td>{{ p.content | slice:0:50 }}{{ p.content.length > 50 ? '…' : '' }}</td>
+            <td>{{ p.group?.name }}</td>
+            <td>{{ p.author?.name }}</td>
+            <td>{{ p.created_at | date:'short' }}</td>
+            <td>
+              <button (click)="editPost(p.id)"  class="btn btn-sm btn-primary">Editar</button>
+              <button (click)="deletePost(p.id)" class="btn btn-sm btn-danger">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

@@ -1,0 +1,33 @@
+/* src/app/admin/users/users.component.css */
+.users-page {
+  max-width: 100%;
+}
+
+.users-page h3 {
+  font-size: 1.75rem;
+  color: #2c3e50;
+}
+
+.table {
+  background: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.alert {
+  margin-top: 1rem;
+}

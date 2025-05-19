@@ -1,0 +1,13 @@
+<h2>Nuevo usuario</h2>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Nombre:</label>
+    <input formControlName="name">
+  </div>
+  <div>
+    <label>Email:</label>
+    <input formControlName="email">
+  </div>
+  <button type="submit" [disabled]="form.invalid">Crear</button>
+  <a routerLink="/admin/users">Cancelar</a>
+</form>

@@ -1,0 +1,18 @@
+<div class="container mt-4">
+    <h2>Unirse a Grupo</h2>
+    <form [formGroup]="joinForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="groupId" class="form-label">ID del Grupo:</label>
+        <input id="groupId" type="text" formControlName="groupId" class="form-control" placeholder="Introduce el ID del grupo" />
+      </div>
+      <div class="mb-3">
+        <label for="access_key" class="form-label">Clave de Acceso (si es privado):</label>
+        <input id="access_key" type="text" formControlName="access_key" class="form-control" placeholder="Introduce la clave de acceso" />
+      </div>
+      <button type="submit" class="btn btn-primary">Unirse</button>
+    </form>
+    <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+      {{ errorMessage }}
+    </div>
+  </div>
+  

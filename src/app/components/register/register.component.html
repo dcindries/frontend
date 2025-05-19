@@ -1,0 +1,112 @@
+<div class="register-page">
+  <!-- Hero / Encabezado -->
+  <section class="hero row align-items-center mb-5">
+    <div class="col-md-6 hero-text">
+      <h1>Regístrate en nuestra plataforma</h1>
+      <p>Completa los campos con tus datos para unirte a la comunidad</p>
+      <a routerLink="/login" class="btn-grey btn-primary">Iniciar Sesión</a>
+    </div>
+    <div class="col-md-6 hero-image">
+      <div class="ratio ratio-4x3">
+        <img
+          [src]="baseUrl + '/storage/placeholders/register1.png'"
+          alt="Ilustración registro"
+          class="object-fit-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulario -->
+  <section class="form-section row align-items-center">
+    <!-- Imagen decorativa junto al formulario -->
+    <div class="col-md-6 form-image mb-4 mb-md-0">
+      <div class="ratio ratio-4x3">
+        <img
+          [src]="baseUrl + '/storage/placeholders/register2.png'"
+          alt="Decoración formulario"
+          class="object-fit-cover"
+        />
+      </div>
+    </div>
+
+    <!-- Contenedor del formulario -->
+    <div class="col-md-6 form-container">
+      <!-- Preview foto de perfil y selector -->
+      <div class="d-flex justify-content-center mb-4">
+        <img
+          [src]="previewUrl || defaultProfile"
+          alt="Foto de perfil"
+          class="profile-img"
+        />
+      </div>
+      <div class="text-center mb-4">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          (click)="fileInput.click()"
+        >
+          <i class="bi bi-camera-fill"></i> Cambiar foto
+        </button>
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          class="d-none"
+        />
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="form-control"
+            placeholder="Tu nombre"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Tu correo electrónico"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="form-control"
+            placeholder="Ingresa tu contraseña"
+          />
+        </div>
+
+        <button type="submit" class="btn-register mt-3" [disabled]="registerForm.invalid">
+          Registrarse
+        </button>
+      </form>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer text-center mt-5">
+    <a routerLink="/contacto">Contacto</a>
+    <span class="mx-3">|</span>
+    <a routerLink="/terminos">Términos de uso</a>
+    <span class="mx-3">|</span>
+    <a routerLink="/privacidad">Política de privacidad</a>
+  </footer>
+</div>

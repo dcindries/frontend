@@ -1,0 +1,62 @@
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Título principal */
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #227093;
+    margin-bottom: 20px;
+  }
+  
+  /* Alertas */
+  .alert {
+    margin-top: 15px;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .alert-danger {
+    background-color: #ff6b6b;
+    color: #ffffff;
+  }
+  
+  /* Lista de publicaciones */
+  .list-group {
+    margin-top: 20px;
+  }
+  
+  /* Elementos de la lista */
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+  }
+  
+  /* Título y contenido de cada publicación */
+  .list-group-item h5 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: #227093;
+  }
+  
+  .list-group-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333333;
+  }
+  

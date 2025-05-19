@@ -1,0 +1,68 @@
+/* src/app/shared/header.component.css */
+
+/* Header sólido y sobrio */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Navbar oscuro */
+.navbar {
+  background-color: #343a40 !important;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Marca (logo/texto) */
+.navbar-brand {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: #f8f9fa !important;
+  transition: color 0.2s ease;
+}
+.navbar-brand:hover {
+  color: #e9ecef !important;
+}
+
+/* Toggler icon en blanco */
+.navbar-toggler {
+  border: none;
+}
+.navbar-toggler-icon {
+  filter: brightness(0) invert(1);
+}
+
+/* Enlaces de navegación */
+.navbar-nav .nav-link {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #dee2e6 !important;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  background-color: #495057 !important;
+  color: #f8f9fa !important;
+}
+
+/* Imagen de perfil */
+.profile-header-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #f8f9fa;
+  transition: transform 0.2s ease;
+}
+.profile-header-img:hover {
+  transform: scale(1.05);
+}
+
+/* Separación entre enlaces */
+.navbar-nav .nav-item {
+  margin-left: 0.5rem;
+}

@@ -1,0 +1,32 @@
+<!-- src/app/components/groups/private-groups.component.html -->
+<div class="container mt-4">
+  <h2>Mis Grupos Privados</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="privateGroups && privateGroups.length > 0; else noGroups">
+    <div class="row">
+      <div *ngFor="let group of privateGroups" class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ group.name }}</h5>
+            <p class="card-text">{{ group.description }}</p>
+          </div>
+          <div class="card-footer">
+            <span class="badge badge-members">{{ group.members_count || 0 }} socios</span>
+            <span *ngIf="group.created_by === currentUserId" class="badge badge-key">
+              Clave: {{ group.access_key }}
+            </span>
+            <a [routerLink]="['/groups', group.id]" class="btn btn-view">Ver</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noGroups>
+    <p class="no-groups">No tienes grupos privados.</p>
+  </ng-template>
+</div>

@@ -1,0 +1,21 @@
+<div class="saved-posts container mt-4">
+  <h2>Publicaciones Guardadas</h2>
+  <div *ngIf="posts.length; else none">
+    <div *ngFor="let e of posts" class="card mb-3">
+      <div class="card-body">
+        <p class="card-text">{{ e.post.content | slice:0:100 }}…</p>
+        <small class="text-muted">
+          Guardado {{ e.saved_at | date:'short' }}
+        </small>
+      </div>
+      <div class="card-footer">
+        <a [routerLink]="['/groups', e.post.group.id]" class="btn btn-sm btn-outline-primary">
+          Ver grupo
+        </a>
+      </div>
+    </div>
+  </div>
+  <ng-template #none>
+    <p class="text-muted">No tienes publicaciones guardadas.</p>
+  </ng-template>
+</div>

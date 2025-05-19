@@ -1,0 +1,64 @@
+<!-- src/app/app.component.html -->
+<header *ngIf="showHeader">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/groups">MiRedSocial</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/groups" routerLinkActive="active">Grupos</a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/create-group" routerLinkActive="active">Crear Grupo</a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/my-groups" routerLinkActive="active">Mis Grupos</a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/my-private-groups" routerLinkActive="active">Mis Grupos Privados</a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/my-likes" routerLinkActive="active">Me gusta</a>
+          </li>
+
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/saved">Guardados</a>
+          </li>
+
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/profile" routerLinkActive="active">
+              <img
+                [src]="profileImageUrl"
+                alt="Perfil"
+                class="profile-header-img rounded-circle"
+                width="32"
+                height="32"
+              />
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+          </li>
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/register" routerLinkActive="active">Registro</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="py-4 container">
+  <router-outlet></router-outlet>
+</main>

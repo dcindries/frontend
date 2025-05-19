@@ -1,0 +1,94 @@
+/* Contenedor principal */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Título de la página */
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #227093;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos del formulario */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Etiquetas (labels) */
+  .form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 5px;
+  }
+  
+  /* Inputs de texto y textarea */
+  .form-control {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+    color: #333333;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    transition: border 0.2s ease;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #227093;
+  }
+  
+  /* Checkbox */
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  /* Botón de enviar (Crear Grupo) */
+  .btn-primary {
+    background: linear-gradient(135deg, #34ace0, #227093);
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(34, 112, 147, 0.4);
+  }
+  
+  /* Mensaje de error */
+  .alert {
+    margin-top: 15px;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  
+  .alert-danger {
+    background-color: #ff6b6b;
+    color: #ffffff;
+  }
+  

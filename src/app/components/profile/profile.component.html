@@ -1,0 +1,32 @@
+<div class="container mt-5">
+  <div class="card profile-card shadow-lg">
+    <div class="card-body text-center">
+      <div class="profile-img-container position-relative d-inline-block mb-3">
+        <img [src]="profileImageUrl" alt="Foto de perfil" class="profile-img mb-3">
+        <!-- Overlay para cambiar la foto -->
+        <div class="edit-photo-overlay" (click)="fileInput.click()">
+          <i class="bi bi-camera-fill"></i>
+          <span>Cambiar</span>
+        </div>
+        <!-- Input de archivo oculto -->
+        <input type="file" #fileInput (change)="onFileSelected($event)" class="d-none">
+      </div>
+      <h3 class="card-title">{{ user?.name }}</h3>
+      <p class="card-text text-muted">{{ user?.email }}</p>
+      <p class="card-text">
+        <small class="text-muted">Miembro desde: {{ user?.created_at | date:'mediumDate' }}</small>
+      </p>
+      <!-- Botón para actualizar la foto, visible solo si se ha seleccionado un archivo -->
+      <div *ngIf="selectedFile" class="mt-2">
+        <button class="btn btn-primary btn-sm" (click)="updateProfilePhoto()">Actualizar Foto</button>
+      </div>
+      <!-- Botón para cerrar sesión -->
+      <div *ngIf="isLoggedIn" class="mt-3">
+        <button class="btn btn-danger" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3 text-center">
+    {{ errorMessage }}
+  </div>
+</div>

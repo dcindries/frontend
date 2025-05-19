@@ -1,0 +1,51 @@
+/* Fuentes y colores */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+/* Navbar personalizado */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Botones con efecto */
+.btn-custom {
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+.btn-custom:hover {
+  transform: translateY(-2px);
+}
+
+/* Tarjetas con animación */
+.card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Personalización de formularios */
+.form-control {
+  border-radius: 5px;
+  box-shadow: none;
+  border: 1px solid #ddd;
+}
+.form-control:focus {
+  border-color: #6c63ff;
+}
+
+/* Tarjeta de perfil */
+.profile-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

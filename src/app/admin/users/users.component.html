@@ -1,0 +1,42 @@
+<div class="users-page">
+    <h3 class="mb-4">Listado de Usuarios</h3>
+  
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  
+    <table *ngIf="!loading && users.length" class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th><th>Nombre</th><th>Email</th><th>Creado</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td>{{ u.id }}</td>
+          <td>{{ u.name }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.created_at | date:'short' }}</td>
+          <td>
+            <a [routerLink]="['edit',u.id]" class="btn btn-sm btn-outline-secondary me-2">
+              Editar
+            </a>
+            <button (click)="deleteUser(u.id)" class="btn btn-sm btn-outline-danger">
+              Borrar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <div *ngIf="!loading && !users.length" class="text-center py-4 text-muted">
+      No hay usuarios registrados.
+    </div>
+  </div>
+  

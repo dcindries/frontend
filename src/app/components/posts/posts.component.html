@@ -1,0 +1,19 @@
+<div class="container mt-4">
+    <h2 class="mb-4">Publicaciones</h2>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="posts && posts.length > 0; else noPosts">
+      <div class="list-group">
+        <a *ngFor="let post of posts" class="list-group-item list-group-item-action"
+           [routerLink]="['/posts', post.id]">
+          <h5>{{ post.content }}</h5>
+          <p *ngIf="post.image_path">Imagen: {{ post.image_path }}</p>
+        </a>
+      </div>
+    </div>
+    <ng-template #noPosts>
+      <p>No hay publicaciones disponibles.</p>
+    </ng-template>
+  </div>
+  

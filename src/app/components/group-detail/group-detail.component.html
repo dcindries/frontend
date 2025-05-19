@@ -1,0 +1,244 @@
+<div class="container mt-4" *ngIf="group; else loading">
+  <!-- Detalle del grupo -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body text-center">
+      <h2 class="card-title">{{ group.name }}</h2>
+      <p class="card-text">{{ group.description }}</p>
+      <p class="card-text text-muted">
+        Creado por: <strong>{{ group.creator?.name }}</strong>
+      </p>
+      <p class="card-text">
+        <small class="text-muted">Socios: {{ group.members_count || 0 }}</small>
+      </p>
+      <p *ngIf="isAdmin && group.access_key" class="card-text">
+        <small class="text-muted">
+          Clave de acceso: <strong>{{ group.access_key }}</strong>
+        </small>
+      </p>
+
+      <!-- Botones de Unirse/Salir -->
+      <div *ngIf="isLoggedIn" class="mt-3 d-flex justify-content-center gap-2">
+
+        <!-- Grupo público: botón directo -->
+        <button *ngIf="!isMember && group.is_public"
+                class="btn btn-success"
+                (click)="joinGroup()">
+          <i class="bi bi-hand-thumbs-up"></i> Unirse al Grupo
+        </button>
+
+        <!-- Grupo privado: formulario de clave -->
+        <form *ngIf="!isMember && !group.is_public"
+              [formGroup]="accessKeyForm"
+              (ngSubmit)="joinGroup()"
+              class="d-flex w-auto gap-2">
+          <input formControlName="access_key"
+                 type="text"
+                 class="form-control"
+                 placeholder="Clave de acceso">
+          <button type="submit"
+                  class="btn btn-success"
+                  [disabled]="accessKeyForm.invalid">
+            <i class="bi bi-key-fill"></i> Entrar
+          </button>
+        </form>
+
+        <!-- Ya miembro: botón de salir -->
+        <button *ngIf="isMember"
+                class="btn btn-danger"
+                (click)="leaveGroup()">
+          <i class="bi bi-hand-thumbs-down"></i> Salir del Grupo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para crear post -->
+  <div *ngIf="isLoggedIn && isMember" class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Crear Publicación</h5>
+      <form [formGroup]="postForm" (ngSubmit)="onPostSubmit()">
+        <div class="mb-3">
+          <textarea formControlName="content"
+                    class="form-control"
+                    rows="3"
+                    placeholder="¿Qué estás pensando?"></textarea>
+        </div>
+          <div class="mb-3 d-flex align-items-center gap-2">
+            <input #fileInput type="file"
+                  class="d-none"
+                  (change)="onFileSelected($event)">
+            <button type="button"
+                    class="btn btn-outline-primary"
+                    (click)="fileInput.click()">
+              <i class="bi bi-upload"></i> Imagen
+            </button>
+
+            <!-- Indicador de fichero seleccionado -->
+            <ng-container *ngIf="selectedFile">
+              <span class="ms-2 text-success">
+                <i class="bi bi-check-circle-fill"></i>
+                {{ selectedFile.name }}
+              </span>
+              <!-- Miniatura opcional -->
+              <img *ngIf="imagePreview"
+                  [src]="imagePreview"
+                  alt="Preview"
+                  class="rounded mt-2"
+                  style="max-width:100px; max-height:100px;">
+            </ng-container>
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    [disabled]="postForm.invalid">
+              <i class="bi bi-send"></i> Publicar
+            </button>
+          </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de publicaciones -->
+  <h3 class="mt-4 text-center">Publicaciones</h3>
+  <div *ngIf="posts.length; else noPosts">
+    <div *ngFor="let post of posts" class="card mb-4" [attr.id]="'post-' + post.id" >
+
+      <div class="card-body position-relative">
+
+        <!-- Dropdown de ajustes: autor, admin o creador de grupo -->
+        <div *ngIf="
+            isLoggedIn
+            && (
+                 post.created_by   === currentUserId
+              || isAdmin
+              || isGroupCreator
+               )"
+             class="position-absolute top-0 end-0 m-3 dropdown"
+        >
+          <button
+            id="postOpts{{post.id}}"
+            class="btn btn-sm btn-link dropdown-toggle p-0"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-gear-fill"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end"
+              [attr.aria-labelledby]="'postOpts' + post.id">
+            <li>
+              <button class="dropdown-item" (click)="editPost(post)">
+                <i class="bi bi-pencil me-1"></i> Editar
+              </button>
+            </li>
+            <li>
+              <button class="dropdown-item text-danger" (click)="deletePost(post)">
+                <i class="bi bi-trash me-1"></i> Eliminar
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Botón de Me Gusta -->
+        <div class="d-flex align-items-center mb-2">
+          <button
+            class="btn btn-link p-0 me-2"
+            (click)="toggleLike(post)"
+            [title]=" likedPosts.has(post.id) ? 'Quitar Me gusta' : 'Dar Me gusta' "
+          >
+            <i
+              class="bi"
+              [ngClass]=" likedPosts.has(post.id) ? 'bi-heart-fill text-danger' : 'bi-heart' "
+              style="font-size: 1.3rem;"
+            ></i>
+          </button>
+          <small>{{ post.likes || 0 }} {{ post.likes === 1 ? 'Me gusta' : 'Me gusta' }}</small>
+
+          <button
+            class="btn btn-link p-0 ms-3"
+            (click)="toggleSave(post)"
+            [title]="savedPosts.has(post.id) ? 'Quitar guardado' : 'Guardar publicación'"
+          >
+            <i
+              class="bi"
+              [ngClass]="
+                savedPosts.has(post.id)
+                  ? 'bi-bookmark-fill text-primary'
+                  : 'bi-bookmark'
+              "
+              style="font-size:1.3rem"
+            ></i>
+          </button>
+        </div>
+
+
+        <p class="mb-2">{{ post.content }}</p>
+        <div *ngIf="post.image_path" class="text-center mb-2">
+          <img [src]="post.image_path"
+               alt="Imagen del post"
+               class="img-fluid rounded">
+        </div>
+      </div>
+      <div class="card-footer text-muted d-flex justify-content-between">
+        <small>Publicado {{ getRelativeTime(post.created_at) }}</small>
+      </div>
+
+      <!-- Sección de comentarios -->
+      <div *ngIf="isLoggedIn" class="card-body border-top">
+        <h6>Comentarios</h6>
+        <div *ngIf="post.comments?.length; else noComments">
+          <div *ngFor="let c of post.comments"
+               class="mb-3 px-2 d-flex justify-content-between align-items-start">
+            <div>
+              <p class="mb-1">
+                <strong>{{ c.user?.name }}</strong>: {{ c.content }}
+              </p>
+              <small class="text-muted">{{ getRelativeTime(c.created_at) }}</small>
+            </div>
+            <!-- Borrar comentario: autor, admin o creador de grupo -->
+            <button
+              *ngIf="
+                isLoggedIn
+                && (
+                     c.user_id        === currentUserId
+                  || isAdmin
+                  || isGroupCreator
+                   )"
+              class="btn btn-link text-danger p-0"
+              (click)="deleteComment(post, c)"
+              title="Borrar comentario"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+        <ng-template #noComments>
+          <p class="text-muted px-2">No hay comentarios.</p>
+        </ng-template>
+
+        <!-- Formulario para comentar -->
+        <form [formGroup]="commentForms[post.id]"
+              (ngSubmit)="onCommentSubmit(post.id)"
+              class="d-flex gap-2 mt-3">
+          <textarea formControlName="content"
+                    class="form-control"
+                    rows="2"
+                    placeholder="Agrega un comentario..."></textarea>
+          <button type="submit"
+                  class="btn btn-secondary btn-sm align-self-end"
+                  [disabled]="commentForms[post.id].invalid">
+            <i class="bi bi-chat-right-text"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noPosts>
+    <p class="text-center text-muted">No hay publicaciones para este grupo.</p>
+  </ng-template>
+</div>
+
+<ng-template #loading>
+  <p class="text-center mt-4">Cargando información del grupo…</p>
+</ng-template>

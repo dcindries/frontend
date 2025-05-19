@@ -1,0 +1,30 @@
+<div class="liked-posts container">
+  <h2 class="section-title">Mis Publicaciones con “Me Gusta”</h2>
+
+  <ng-container *ngIf="posts.length; else none">
+    <div class="cards-grid">
+      <div *ngFor="let post of posts" class="card post-card">
+        <div class="card-image" *ngIf="post.image_path">
+          <img
+            *ngIf="post.image_path"
+            [src]="post.image_path"
+            class="card-img-top"
+            style="cursor: pointer;"
+            (click)="goToGroup(post)"
+          >
+        </div>
+        <div class="card-body">
+          <p class="post-content">{{ post.content }}</p>
+          <div class="post-meta">
+            <span class="badge group-badge">{{ post.group.name }}</span>
+            <span class="post-date">{{ post.created_at | date:'short' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #none>
+    <p class="no-posts">No has dado “Me gusta” a ninguna publicación todavía.</p>
+  </ng-template>
+</div>

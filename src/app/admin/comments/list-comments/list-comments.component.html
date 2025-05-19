@@ -1,0 +1,32 @@
+<div class="admin-page">
+    <h3>Administración de Comentarios</h3>
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Contenido</th>
+            <th>Post ID</th>
+            <th>Autor</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of comments">
+            <td>{{ c.id }}</td>
+            <td>{{ c.content | slice:0:30 }}{{ c.content.length>30?'…':'' }}</td>
+            <td>{{ c.post_id }}</td>
+            <td>{{ c.user?.name }}</td>
+            <td>{{ c.created_at | date:'short' }}</td>
+            <td>
+              <button (click)="editComment(c.id)"  class="btn btn-sm btn-primary">Editar</button>
+              <button (click)="deleteComment(c.id)" class="btn btn-sm btn-danger">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

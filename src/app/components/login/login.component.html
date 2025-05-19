@@ -1,0 +1,66 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="login-page">
+  <!-- Hero / Encabezado -->
+  <section class="hero row align-items-center mb-5">
+    <div class="col-md-6 hero-text">
+      <h1>¡Bienvenido a la Red Social para Grupos Colaborativos!</h1>
+      <p>Descubre y comparte momentos con tus grupos</p>
+      <div class="mt-3">
+        <a routerLink="/register" class="btn-grey btn-outline-primary me-2">Registrarse</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulario de Login con el mismo placeholder -->
+  <section class="form-section row align-items-center">
+    <div class="col-md-6 form-image mb-4 mb-md-0">
+      <div class="ratio ratio-4x3">
+        <img
+          [src]="baseUrl + '/storage/placeholders/login1.png'"
+          alt="Decoración Login"
+          class="object-fit-cover"
+        />
+      </div>
+    </div>
+    <div class="col-md-6 form-container">
+      <h2 class="mb-4">Iniciar Sesión</h2>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="example@redsocial.com"
+          />
+          <small class="text-muted">Formato: ejemplo@dominio.com</small>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="form-control"
+            placeholder="••••••••"
+          />
+          <small class="text-muted">Mínimo 8 caracteres</small>
+        </div>
+        <button type="submit" class="btn btn-register">Ingresar</button>
+      </form>
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer text-center mt-5">
+    <a routerLink="/about">Acerca de nosotros</a>
+    <span class="mx-3">|</span>
+    <a routerLink="/terms">Términos y condiciones</a>
+    <span class="mx-3">|</span>
+    <a routerLink="/privacy">Política de privacidad</a>
+  </footer>
+</div>

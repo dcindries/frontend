@@ -1,0 +1,27 @@
+/* src/app/admin/layout/admin-layout.component.css */
+
+.admin-container {
+  display: flex;
+  height: 100vh;           /* Ocupa toda la altura de la ventana */
+}
+
+.admin-container > aside {
+  flex: 0 0 250px;         /* Ancho fijo del sidebar */
+  overflow-y: auto;        /* Scroll vertical si el sidebar crece */
+  background: #f7f7f7;
+}
+
+.admin-container > section {
+  flex: 1 1 auto;          /* Ocupa todo el espacio restante */
+  padding: 1rem;
+  overflow-x: auto;        /* Scroll horizontal para tablas o contenidos anchos */
+  overflow-y: auto;        /* Scroll vertical si hace falta */
+}
+
+/* A partir de aquí, tablas dentro de section siempre se redimensionan con scroll */
+.admin-container > section table {
+  width: 100%;             /* Ocupa siempre todo el ancho de sección */
+  min-width: 800px;        /* Ajusta este mínimo según tus columnas */
+  table-layout: auto;
+  height: 80%;
+}

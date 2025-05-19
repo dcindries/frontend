@@ -1,0 +1,27 @@
+<!-- src/app/admin/groups/list-groups/list-groups.component.html -->
+<div class="admin-page">
+    <h3>Administración de Grupos</h3>
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Público</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let g of groups">
+          <td>{{ g.id }}</td>
+          <td>{{ g.name }}</td>
+          <td>{{ g.is_public ? 'Sí' : 'No' }}</td>
+          <td>
+            <button (click)="editGroup(g.id)"  class="btn btn-sm btn-primary">Editar</button>
+            <button (click)="deleteGroup(g.id)" class="btn btn-sm btn-danger">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
