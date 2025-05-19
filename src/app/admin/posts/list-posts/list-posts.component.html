@@ -21,7 +21,6 @@
             <td>{{ p.author?.name }}</td>
             <td>{{ p.created_at | date:'short' }}</td>
             <td>
-              <button (click)="editPost(p.id)"  class="btn btn-sm btn-primary">Editar</button>
               <button (click)="deletePost(p.id)" class="btn btn-sm btn-danger">Eliminar</button>
             </td>
           </tr>

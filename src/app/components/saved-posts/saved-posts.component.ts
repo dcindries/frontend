@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { SavedPostsService, SaveEntry } from '../../services/saved-posts.service';
 
 @Component({
@@ -9,12 +10,19 @@ import { SavedPostsService, SaveEntry } from '../../services/saved-posts.service
 export class SavedPostsComponent implements OnInit {
   posts: SaveEntry[] = [];
 
-  constructor(private savedPostsService: SavedPostsService) {}
+  constructor(
+    private savedPostsService: SavedPostsService,
+    private router: Router  
+  ) {}
 
   ngOnInit(): void {
     this.savedPostsService.getMySaved().subscribe({
       next: data => this.posts = data,
       error: err => console.error('Error cargando guardados:', err)
     });
+  }
+
+  goToGroup(post: any): void {
+    this.router.navigate(['/groups', post.group.id]);
   }
 }

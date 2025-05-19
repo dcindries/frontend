@@ -42,6 +42,8 @@ export class GroupDetailComponent implements OnInit {
   croppedImage: string | null = null;
   croppingCompleted = false;
   selectedFile: File | null = null;
+  groupForm!: FormGroup;    
+  editMode = false;   
 
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +59,7 @@ export class GroupDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Scroll suave al fragment (post-<id>) si viene en la URL
+
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
@@ -87,6 +89,10 @@ export class GroupDetailComponent implements OnInit {
     this.accessKeyForm = this.fb.group({
       access_key: ['', Validators.required]
     });
+    this.groupForm = this.fb.group({
+      name:        ['', Validators.required],
+      description: ['']
+    });
 
     this.authService.getUser().subscribe({
       next: user => {
@@ -102,20 +108,26 @@ export class GroupDetailComponent implements OnInit {
     });
   }
 
-  private loadGroup(id: number): void {
-    this.groupsService.getGroupById(id).subscribe({
-      next: (res: any) => {
-        this.group = res.group;
-        this.isMember = res.isMember;
-        this.isAdmin = this.currentUserId === this.group.created_by;
-        this.isGroupCreator = this.group.created_by === this.currentUserId;
-      },
-      error: err => {
-        console.error('Error al cargar el grupo:', err);
-        this.errorMessage = 'Error al cargar el grupo.';
-      }
-    });
-  }
+private loadGroup(id: number): void {
+  this.groupsService.getGroupById(id).subscribe({
+    next: (res: any) => {
+      this.group           = res.group;
+      this.isMember        = res.isMember;
+      this.isAdmin         = this.currentUserId === this.group.created_by;
+      this.isGroupCreator  = this.group.created_by === this.currentUserId;
+
+      this.groupForm.patchValue({
+        name:        this.group.name,
+        description: this.group.description
+      });
+    },
+    error: err => {
+      console.error('Error al cargar el grupo:', err);
+      this.errorMessage = 'Error al cargar el grupo.';
+    }
+  });
+}
+
 private loadPosts(groupId: number): void {
   this.postsService.getPostsByGroup(groupId).subscribe({
     next: posts => {
@@ -400,6 +412,36 @@ toggleSave(post: any): void {
       }
     });
   }
+}
+
+toggleEditMode(): void {
+  this.editMode = true;
+  this.groupForm.patchValue({
+    name:        this.group.name,
+    description: this.group.description
+  });
+}
+
+cancelEdit(): void {
+  this.editMode = false;
+}
+
+saveGroup(): void {
+  if (this.groupForm.invalid) return;
+
+  const { name, description } = this.groupForm.value;
+  this.groupsService.updateGroup(this.group.id, { name, description })
+    .subscribe({
+      next: (updated: any) => {
+        this.group.name        = updated.name;
+        this.group.description = updated.description;
+        this.editMode = false;
+      },
+      error: err => {
+        console.error('Error al actualizar grupo:', err);
+        this.errorMessage = err.error?.message || 'Error al actualizar el grupo.';
+      }
+    });
 }
 
 

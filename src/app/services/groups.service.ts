@@ -71,4 +71,14 @@ export class GroupsService {
     );
   }
   
+
+  updateGroup(id: number, data: { name: string; description: string; }): Observable<any> {
+  const token = localStorage.getItem('authToken')!;
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  return this.http.put<any>(
+    `${this.apiUrl}/groups/${id}`,
+    data,
+    { headers }
+  );
+}
 }

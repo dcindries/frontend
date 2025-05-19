@@ -36,39 +36,67 @@
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-  <!-- Recent Posts (Masonry) -->
-  <section class="posts-section mb-5">
-    <h2 class="section-title">Publicaciones Recientes</h2>
-    <div class="posts-masonry">
-      <div *ngFor="let post of recentPosts" class="masonry-item">
-        <div class="post-card">
-          <!-- Imagen y badge de grupo -->
-          <div class="post-image-wrapper" *ngIf="post.image_path">
-            <img [src]="post.image_path" alt="Imagen del post" />
-            <a
-              [routerLink]="['/groups', post.group_id]"
-              class="group-badge"
-            >
-              {{ post.groupName }}
-            </a>
-          </div>
-          <!-- Contenido y metadatos -->
-          <div class="post-content">
-            <p>{{ post.content }}</p>
-            <small>
-              Publicado por Anónimo ·
-              <a
-                [routerLink]="['/groups', post.group_id]"
-                class="text-decoration-none"
-              >
-                {{ post.groupName }}
-              </a>
+ <!-- Recent Posts (Masonry) -->
+<section class="posts-section mb-5">
+  <h2 class="section-title">Publicaciones Recientes</h2>
+  <div class="posts-masonry">
+    <div *ngFor="let post of recentPosts" class="masonry-item">
+      <div class="post-card">
+        <!-- Imagen y badge de grupo -->
+        <div class="post-image-wrapper" *ngIf="post.image_path">
+          <img [src]="post.image_path" alt="Imagen del post" />
+          <a [routerLink]="['/groups', post.group_id]" class="group-badge">
+            {{ post.groupName }}
+          </a>
+        </div>
+
+        <!-- Contenido -->
+        <div class="post-content p-3">
+          <p>{{ post.content }}</p>
+
+          <!-- Aquí añadimos actions: fecha, likes y guardar -->
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">
+              Publicado · {{ post.created_at | date:'short' }}
             </small>
+
+            <div class="d-flex align-items-center">
+              <!-- Like Button -->
+            <button
+              class="btn btn-link btn-like"
+              [ngClass]="{ liked: likedPosts.has(post.id) }"
+              (click)="toggleLike(post)"
+            >
+              <i
+                class="bi"
+                [ngClass]="
+                  likedPosts.has(post.id)
+                    ? 'bi-heart-fill text-danger'
+                    : 'bi-heart'
+                "
+              ></i>
+              <span class="like-count">{{ post.likes || 0 }}</span>
+            </button>
+
+
+              <!-- Save Button -->
+              <button class="btn btn-link p-0" (click)="toggleSave(post)"
+                      [title]=" savedPosts.has(post.id)
+                                 ? 'Quitar de guardados'
+                                 : 'Guardar publicación' ">
+                <i class="bi"
+                   [ngClass]=" savedPosts.has(post.id)
+                                ? 'bi-bookmark-fill text-primary'
+                                : 'bi-bookmark' "
+                   style="font-size: 1.2rem;"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Featured Groups -->
   <section class="featured-section">

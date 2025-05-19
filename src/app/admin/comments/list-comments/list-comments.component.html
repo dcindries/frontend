@@ -21,7 +21,6 @@
             <td>{{ c.user?.name }}</td>
             <td>{{ c.created_at | date:'short' }}</td>
             <td>
-              <button (click)="editComment(c.id)"  class="btn btn-sm btn-primary">Editar</button>
               <button (click)="deleteComment(c.id)" class="btn btn-sm btn-danger">Eliminar</button>
             </td>
           </tr>

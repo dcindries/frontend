@@ -2,10 +2,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged, switchMap, map, filter, take } from 'rxjs/operators';
+
 import { GroupsService } from '../../services/groups.service';
 import { PostsService } from '../../services/posts.service';
 import { AuthService, User } from '../../services/auth.service';
-import { debounceTime, distinctUntilChanged, switchMap, map, filter, take } from 'rxjs/operators';
+import { LikesService } from '../../services/likes.service';                // ← añadido
+import { SavedPostsService } from '../../services/saved-posts.service';   // ← añadido
 
 interface Group {
   id: number;
@@ -13,6 +16,7 @@ interface Group {
   description?: string;
   is_public: boolean;
   members_count?: number;
+  
 }
 
 interface Post {
@@ -22,6 +26,7 @@ interface Post {
   created_at: string;
   group_id: number;
   author: { id: number; name: string };
+  likes?: number;
 }
 
 @Component({
@@ -40,16 +45,20 @@ export class GroupsComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  likedPosts = new Set<number>();   // ← añadido
+  savedPosts = new Set<number>();   // ← añadido
+
   constructor(
     private fb: FormBuilder,
     private groupsService: GroupsService,
     private postsService: PostsService,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private likesService: LikesService,               // ← añadido
+    private savedPostsService: SavedPostsService     // ← añadido
   ) {}
 
   ngOnInit(): void {
-    // Si es el admin con email especificado, redirigir directamente al panel admin
     this.auth.currentUser$
       .pipe(
         filter((u): u is User => u !== null),
@@ -65,14 +74,11 @@ export class GroupsComponent implements OnInit {
   }
 
   private initComponent(): void {
-    // Formularios
     this.searchForm = this.fb.group({ q: [''] });
     this.joinCodeForm = this.fb.group({ code: [''] });
 
-    // Estado de autenticación
     this.auth.isAuthenticated$.subscribe((v: boolean) => this.isLoggedIn = v);
 
-    // Búsqueda en vivo: solo grupos públicos
     this.qControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -85,8 +91,11 @@ export class GroupsComponent implements OnInit {
       )
     ).subscribe((results: Group[]) => this.searchResults = results);
 
-    // Carga inicial
     this.fetchGroups();
+
+    // inicializar likes y guardados
+    this.loadMyLikes();       // ← añadido
+    this.loadMySaved();       // ← añadido
   }
 
   get qControl(): FormControl {
@@ -160,6 +169,60 @@ export class GroupsComponent implements OnInit {
       error: err => {
         console.error('Error al unirse por código:', err);
         this.errorMessage = err.error?.message || 'No se pudo unir al grupo.';
+      }
+    });
+  }
+
+  // ————— añadido: carga mis likes —————
+  private loadMyLikes(): void {
+    this.likesService.getMyLikes().subscribe({
+      next: myLikes => myLikes.forEach(like => this.likedPosts.add(like.id)),
+      error: err => console.error('Error cargando likes:', err)
+    });
+  }
+
+  // ————— añadido: carga mis guardados —————
+  private loadMySaved(): void {
+    this.savedPostsService.getMySaved().subscribe({
+      next: entries => entries.forEach(e => this.savedPosts.add(e.post.id)),
+      error: err => console.error('Error cargando guardados:', err)
+    });
+  }
+
+  // ————— añadido: toggle like —————
+  toggleLike(post: any): void {
+    const fn = this.likedPosts.has(post.id)
+      ? this.likesService.unlikePost(post.id)
+      : this.likesService.likePost(post.id);
+
+    fn.subscribe(res => {
+      post.likes = res.likes;
+      if (this.likedPosts.has(post.id)) {
+        this.likedPosts.delete(post.id);
+      } else {
+        this.likedPosts.add(post.id);
+      }
+    });
+  }
+
+  // ————— añadido: toggle save —————
+  toggleSave(post: any): void {
+    const fn = this.savedPosts.has(post.id)
+      ? this.savedPostsService.unsavePost(post.id)
+      : this.savedPostsService.savePost(post.id);
+
+    fn.subscribe({
+      next: () => {
+        if (this.savedPosts.has(post.id)) {
+          this.savedPosts.delete(post.id);
+        } else {
+          this.savedPosts.add(post.id);
+        }
+      },
+      error: err => {
+        if (err.status === 409) {
+          this.savedPosts.add(post.id);
+        }
       }
     });
   }

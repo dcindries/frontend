@@ -1,21 +1,33 @@
-<div class="saved-posts container mt-4">
-  <h2>Publicaciones Guardadas</h2>
-  <div *ngIf="posts.length; else none">
-    <div *ngFor="let e of posts" class="card mb-3">
-      <div class="card-body">
-        <p class="card-text">{{ e.post.content | slice:0:100 }}…</p>
-        <small class="text-muted">
-          Guardado {{ e.saved_at | date:'short' }}
-        </small>
-      </div>
-      <div class="card-footer">
-        <a [routerLink]="['/groups', e.post.group.id]" class="btn btn-sm btn-outline-primary">
-          Ver grupo
-        </a>
+<div class="saved-posts container">
+  <h2 class="section-title">Mis Publicaciones Guardadas</h2>
+
+  <ng-container *ngIf="posts.length; else none">
+    <div class="cards-grid">
+      <div *ngFor="let e of posts" class="card post-card">
+        <!-- Imagen -->
+        <div class="card-image" *ngIf="e.post.image_path">
+          <img
+            [src]="e.post.image_path"
+            class="card-img-top"
+            style="cursor: pointer;"
+            (click)="goToGroup(e.post)"
+            alt="Imagen del post"
+          />
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="card-body">
+          <p class="post-content">{{ e.post.content }}</p>
+          <div class="post-meta">
+            <span class="badge group-badge">{{ e.post.group.name }}</span>
+            <span class="post-date">{{ e.saved_at | date:'short' }}</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+
   <ng-template #none>
-    <p class="text-muted">No tienes publicaciones guardadas.</p>
+    <p class="no-posts">No tienes publicaciones guardadas.</p>
   </ng-template>
 </div>

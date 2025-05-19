@@ -1,13 +1,23 @@
-/* Igual que en create-user */
-div {
-    margin-bottom: 8px;
-  }
-  input {
-    width: 100%;
-    padding: 4px;
-    box-sizing: border-box;
-  }
-  button {
-    margin-right: 8px;
-  }
-  
+/* Centra la tarjeta y espaciado */
+.container {
+  padding-top: 2rem;
+}
+
+/* Ajustes de la tarjeta */
+.card {
+  border-radius: 0.5rem;
+}
+
+/* Estilos invalid */
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
+/* Preview de la imagen */
+.img-thumbnail {
+  object-fit: cover;
+}

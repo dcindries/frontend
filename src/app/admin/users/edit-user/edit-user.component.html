@@ -1,13 +1,101 @@
-<h2>Editar usuario</h2>
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div>
-    <label>Nombre:</label>
-    <input formControlName="name">
+<div class="container">
+  <div class="card mx-auto mt-5 shadow-sm" style="max-width:600px;">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Editar Usuario</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre *</label>
+          <input
+            id="name"
+            type="text"
+            class="form-control"
+            formControlName="name"
+            [class.is-invalid]="submitted && f['name'].invalid"
+          />
+          <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback">
+            El nombre es obligatorio.
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Email *</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="submitted && f['email'].invalid"
+          />
+          <div *ngIf="submitted && f['email'].errors?.['required']" class="invalid-feedback">
+            El email es obligatorio.
+          </div>
+          <div *ngIf="submitted && f['email'].errors?.['email']" class="invalid-feedback">
+            Introduce un email válido.
+          </div>
+        </div>
+
+        <!-- Nueva Contraseña (opcional) -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Nueva Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            formControlName="password"
+            [class.is-invalid]="submitted && f['password'].invalid"
+            placeholder="Dejar en blanco para no cambiar"
+          />
+          <div *ngIf="submitted && f['password'].errors?.['minlength']" class="invalid-feedback">
+            Mínimo 6 caracteres.
+          </div>
+        </div>
+
+        <!-- Confirmar Contraseña (solo si se escribe nueva) -->
+        <div class="mb-3" *ngIf="f['password'].value">
+          <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            class="form-control"
+            formControlName="confirmPassword"
+            [class.is-invalid]="submitted && (f['confirmPassword'].invalid || form.errors?.['mismatch'])"
+          />
+          <div *ngIf="submitted && f['confirmPassword'].invalid" class="invalid-feedback">
+            Necesitas confirmar la contraseña.
+          </div>
+          <div *ngIf="submitted && form.errors?.['mismatch']" class="invalid-feedback">
+            Las contraseñas no coinciden.
+          </div>
+        </div>
+
+        <!-- Foto de Perfil -->
+        <div class="mb-4">
+          <label class="form-label">Foto de Perfil</label>
+          <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*" />
+          <img
+            *ngIf="previewUrl"
+            [src]="previewUrl"
+            class="img-thumbnail mt-2"
+            style="max-height:150px;"
+            alt="Preview foto"
+          />
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary" routerLink="/admin/users">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <span *ngIf="!loading">Guardar</span>
+            <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-  <div>
-    <label>Email:</label>
-    <input formControlName="email">
-  </div>
-  <button type="submit" [disabled]="form.invalid">Guardar</button>
-  <a routerLink="/admin/users">Cancelar</a>
-</form>
+</div>

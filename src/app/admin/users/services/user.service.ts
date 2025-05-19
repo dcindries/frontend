@@ -26,9 +26,21 @@ export class UsersService {
     return this.http.post<any>(this.apiUrl, user, { headers: this.authHeaders() });
   }
 
-  update(id: number, user: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, user, { headers: this.authHeaders() });
+update(id: number, user: any): Observable<any> {
+  const headers = this.authHeaders();
+  if (user instanceof FormData) {
+    user.append('_method', 'PUT');
+    return this.http.post<any>(
+      `${this.apiUrl}/${id}`,
+      user,
+      { headers }
+    );
   }
+  return this.http.put<any>(
+    `${this.apiUrl}/${id}`,
+    user,
+    { headers }
+  );}
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.authHeaders() });

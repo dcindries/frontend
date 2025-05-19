@@ -291,3 +291,34 @@
     align-items: stretch;
   }
 }
+
+
+/* Agrupa icono + número en línea y centrados */
+.btn-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Ajusta tamaño del icono */
+.btn-like .bi {
+  font-size: 1.2rem;
+}
+
+/* Estilo base del número */
+.btn-like .like-count {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Cuando esté “liked”, pon el número en rojo */
+.btn-like.liked .like-count {
+  color: #dc3545;
+}
+/* Quita la línea bajo el texto en el botón de like */
+.btn-link.btn-like,
+.btn-link.btn-like:hover,
+.btn-link.btn-like:focus {
+  text-decoration: none !important;
+}

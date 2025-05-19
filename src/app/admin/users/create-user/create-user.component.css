@@ -1,0 +1,30 @@
+/* Centra la tarjeta y le da margen */
+.container {
+  padding-top: 2rem;
+}
+
+/* Ajusta la tarjeta */
+.card {
+  border-radius: 0.5rem;
+}
+
+/* Encabezado */
+.card-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form controls invalid */
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
+/* Imagen de preview */
+.img-thumbnail {
+  object-fit: cover;
+}
