@@ -4,8 +4,8 @@
 
   export const environment = {
     production: false,
-    apiUrl: 'http://localhost:8000/api',
-    baseUrl: 'http://localhost:8000'    // ← añadido
+  apiUrl: 'https://circleup.duckdns.org/api',
+  baseUrl: 'https://circleup.duckdns.org'
   };
 
 

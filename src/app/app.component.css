@@ -1,15 +1,15 @@
 /* src/app/shared/header.component.css */
 
-/* Header sólido y sobrio */
+/* Header sólido y sticky */
 header {
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-/* Navbar oscuro */
+/* Navbar Royal Blue semi-transparente */
 .navbar {
-  background-color: #343a40 !important;
+ background-color: rgba(14, 31, 83, 0.8) !important; /* #0e1f53 con 80% opacidad */
   padding: 0.6rem 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -19,11 +19,11 @@ header {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 1.6rem;
-  color: #f8f9fa !important;
+  color: #FFFFFF !important;
   transition: color 0.2s ease;
 }
 .navbar-brand:hover {
-  color: #e9ecef !important;
+  color: rgba(255,255,255,0.9) !important;
 }
 
 /* Toggler icon en blanco */
@@ -38,15 +38,21 @@ header {
 .navbar-nav .nav-link {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  color: #dee2e6 !important;
+  color: #FFFFFF !important;
   padding: 0.4rem 0.75rem;
   border-radius: 4px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-  background-color: #495057 !important;
-  color: #f8f9fa !important;
+  background-color: rgba(255,255,255,0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Focus accesible */
+.navbar-nav .nav-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(65,105,225,0.25);
 }
 
 /* Imagen de perfil */
@@ -55,7 +61,7 @@ header {
   height: 36px;
   object-fit: cover;
   border-radius: 50%;
-  border: 1px solid #f8f9fa;
+  border: 1px solid #FFFFFF;
   transition: transform 0.2s ease;
 }
 .profile-header-img:hover {
@@ -65,4 +71,20 @@ header {
 /* Separación entre enlaces */
 .navbar-nav .nav-item {
   margin-left: 0.5rem;
+}
+
+/* App-header general semi-transparente */
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.9);
+  border-bottom: #0e1f53;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Logo */
+.logo {
+  height: 80px;
+  margin-right: 1rem;
 }
