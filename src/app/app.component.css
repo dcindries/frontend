@@ -1,20 +1,18 @@
-/* src/app/shared/header.component.css */
-
-/* Header sólido y sticky */
+/* Header sticky */
 header {
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-/* Navbar Royal Blue semi-transparente */
+/* Navbar semi‐transparente */
 .navbar {
- background-color: rgba(14, 31, 83, 0.8) !important; /* #0e1f53 con 80% opacidad */
+  background-color: rgba(14, 31, 83, 0.8) !important;
   padding: 0.6rem 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Marca (logo/texto) */
+/* Marca/logo */
 .navbar-brand {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
@@ -26,7 +24,7 @@ header {
   color: rgba(255,255,255,0.9) !important;
 }
 
-/* Toggler icon en blanco */
+/* Toggler icon blanco */
 .navbar-toggler {
   border: none;
 }
@@ -34,7 +32,7 @@ header {
   filter: brightness(0) invert(1);
 }
 
-/* Enlaces de navegación */
+/* Enlaces */
 .navbar-nav .nav-link {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
@@ -48,8 +46,6 @@ header {
   background-color: rgba(255,255,255,0.2) !important;
   color: #ffffff !important;
 }
-
-/* Focus accesible */
 .navbar-nav .nav-link:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(65,105,225,0.25);
@@ -68,22 +64,12 @@ header {
   transform: scale(1.05);
 }
 
-/* Separación entre enlaces */
+/* Separación entre items */
 .navbar-nav .nav-item {
   margin-left: 0.5rem;
 }
 
-/* App-header general semi-transparente */
-.app-header {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: rgba(255,255,255,0.9);
-  border-bottom: #0e1f53;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-/* Logo */
+/* Logo en header */
 .logo {
   height: 80px;
   margin-right: 1rem;

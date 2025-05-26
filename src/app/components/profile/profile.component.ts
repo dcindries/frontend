@@ -1,6 +1,6 @@
-// src/app/components/profile/profile.component.ts
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService, User } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,8 +9,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  user: any;
+  user!: User;
+  profileForm!: FormGroup;
+  isEditing = false;
   errorMessage = '';
+  successMessage = '';
   defaultProfile = 'assets/default-profile.png';
   selectedFile: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
@@ -19,18 +22,27 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.profileForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]]
+    });
     this.loadUser();
   }
 
-  loadUser(): void {
+  private loadUser(): void {
     this.authService.getUser().subscribe({
-      next: (data: any) => {
+      next: data => {
         this.user = data;
         this.isLoggedIn = true;
+        this.profileForm.patchValue({
+          name: data.name,
+          email: data.email
+        });
         this.imageTimestamp = data.updated_at
           ? new Date(data.updated_at).getTime()
           : this.imageTimestamp;
@@ -42,14 +54,50 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any): void {
-    const files: FileList = event.target.files;
-    if (files && files.length > 0) {
-      this.selectedFile = files[0];
-      const reader = new FileReader();
-      reader.onload = () => this.previewUrl = reader.result;
-      reader.readAsDataURL(this.selectedFile);
+  toggleEdit(): void {
+    this.isEditing = !this.isEditing;
+    this.errorMessage = '';
+    this.successMessage = '';
+    if (!this.isEditing) {
+      // cancelar edición: restaurar valores
+      this.profileForm.patchValue({
+        name: this.user.name,
+        email: this.user.email
+      });
     }
+  }
+
+  saveProfile(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    if (this.profileForm.invalid) {
+      this.errorMessage = 'Por favor corrige los errores.';
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+    const { name, email } = this.profileForm.value;
+    this.authService.updateProfile({ name, email }).subscribe({
+      next: updated => {
+        this.user = updated;
+        this.successMessage = 'Perfil actualizado correctamente.';
+        this.isEditing = false;
+      },
+      error: err => {
+        console.error('Error al actualizar perfil:', err);
+        this.errorMessage = err.status === 409
+          ? 'El correo ya está en uso.'
+          : err.error?.message || 'Error al actualizar el perfil.';
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.selectedFile = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => this.previewUrl = reader.result;
+    reader.readAsDataURL(this.selectedFile);
   }
 
   updateProfilePhoto(): void {
@@ -57,19 +105,18 @@ export class ProfileComponent implements OnInit {
       this.errorMessage = 'Debes seleccionar una imagen.';
       return;
     }
-
     const formData = new FormData();
     formData.append('profile_photo', this.selectedFile, this.selectedFile.name);
     formData.append('_method', 'PUT');
-
     this.authService.updateProfilePost(formData).subscribe({
-      next: (res: any) => {
+      next: res => {
         this.user = res;
         this.imageTimestamp = res.updated_at
           ? new Date(res.updated_at).getTime()
           : Date.now();
         this.selectedFile = null;
         this.previewUrl = null;
+        this.successMessage = 'Foto de perfil actualizada.';
       },
       error: err => {
         console.error('Error al actualizar foto de perfil:', err);

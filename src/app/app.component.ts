@@ -15,6 +15,9 @@ export class AppComponent implements OnInit, OnDestroy {
   profileImageUrl = this.defaultProfile;
   showHeader = true;
 
+  // Control del collapse del navbar
+  isCollapsed = true;
+
   private subs = new Subscription();
 
   constructor(private auth: AuthService, private router: Router) {
@@ -81,5 +84,10 @@ export class AppComponent implements OnInit, OnDestroy {
       next: () => this.router.navigate(['/login']),
       error: err => console.error('Logout error', err),
     });
+  }
+
+  // Alterna el estado collapsed
+  toggleNavbar(): void {
+    this.isCollapsed = !this.isCollapsed;
   }
 }

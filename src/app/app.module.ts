@@ -60,7 +60,8 @@ export function initAppFactory(
     ProfileComponent,
     PostsComponent,
     LikedPostsComponent,
-    SavedPostsComponent
+    SavedPostsComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -68,7 +69,8 @@ export function initAppFactory(
     HttpClientModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,    
   ],
   providers: [
     {

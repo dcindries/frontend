@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -35,87 +34,110 @@ export class AuthService {
     const token = localStorage.getItem('authToken');
     if (token) {
       this._isAuthenticated.next(true);
-      this.fetchUserOnStart();
+      this.getUser().subscribe();
     }
   }
 
-  private fetchUserOnStart(): void {
-    this.getUser()
+  /** Helper to build auth headers */
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken')!;
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  /** Fetch current user */
+  public getUser(): Observable<User> {
+    return this.http
+      .get<User>(`${this.apiUrl}/user`, {
+        headers: this.getAuthHeaders(),
+        observe: 'body' as const,
+      })
       .pipe(
-        tap(user => this._currentUser.next(user)),
+        tap(user => {
+          this._currentUser.next(user);
+          this._isAuthenticated.next(true);
+        }),
         catchError(err => {
-          localStorage.removeItem('authToken');
-          this._isAuthenticated.next(false);
-          this._currentUser.next(null);
+          this.clearSession();
           return throwError(() => err);
         })
-      )
-      .subscribe();
+      );
   }
 
-  public getUser(): Observable<User> {
-    const token = localStorage.getItem('authToken')!;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<User>(`${this.apiUrl}/user`, { headers }).pipe(
-      tap(user => {
-        this._currentUser.next(user);
-        this._isAuthenticated.next(true);
+  /**
+   * Register.
+   * Accepts either raw JSON ({name,email,password})
+   * or FormData (e.g. with profile photo).
+   */
+  public register(
+    payload:
+      | { name: string; email: string; password: string }
+      | FormData
+  ): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/register`, payload, {
+        observe: 'body' as const,
       })
-    );
+      .pipe(tap(res => this.setSession(res)));
   }
 
-  public register(formData: FormData): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/register`, formData).pipe(
-      tap(res => {
-        localStorage.setItem('authToken', res.access_token);
-        this._isAuthenticated.next(true);
-        this._currentUser.next(res.user);
+  /** Login */
+  public login(credentials: {
+    email: string;
+    password: string;
+  }): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/login`, credentials, {
+        observe: 'body' as const,
       })
-    );
+      .pipe(tap(res => this.setSession(res)));
   }
 
-  public login(credentials: { email: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(res => {
-        localStorage.setItem('authToken', res.access_token);
-        this._isAuthenticated.next(true);
-        this._currentUser.next(res.user);
-      })
-    );
-  }
-
+  /** Logout (server + client) */
   public logout(): Observable<any> {
-    const token = localStorage.getItem('authToken')!;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete<any>(`${this.apiUrl}/logout`, { headers }).pipe(
-      tap(() => {
-        localStorage.removeItem('authToken');
-        this._isAuthenticated.next(false);
-        this._currentUser.next(null);
+    return this.http
+      .delete<any>(`${this.apiUrl}/logout`, {
+        headers: this.getAuthHeaders(),
+        observe: 'body' as const,
       })
-    );
+      .pipe(tap(() => this.clearSession()));
   }
 
-  public updateProfilePost(data: FormData): Observable<User> {
-    const token = localStorage.getItem('authToken')!;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post<User>(`${this.apiUrl}/user`, data, {
-      headers,
-      withCredentials: true
-    }).pipe(
-      tap(user => this._currentUser.next(user))
-    );
+  /**
+   * Update profile.
+   * Accepts either JSON or FormData.
+   */
+  public updateProfile(
+    payload: { name?: string; email?: string } | FormData
+  ): Observable<User> {
+    return this.http
+      .post<User>(`${this.apiUrl}/user`, payload, {
+        headers: this.getAuthHeaders(),
+        observe: 'body' as const,
+      })
+      .pipe(tap(u => this._currentUser.next(u)));
   }
 
-  public setCurrentUser(user: User): void {
-    this._currentUser.next(user);
+  /** Alias for the old name */
+  public updateProfilePost(data: FormData | { name?: string; email?: string }) {
+    return this.updateProfile(data);
   }
 
+  /** Synchronous getter */
   public get isLoggedIn(): boolean {
     return this._isAuthenticated.value;
   }
 
-  public setAuthentication(value: boolean): void {
-    this._isAuthenticated.next(value);
+  /** Internal: stash token + user */
+  private setSession(res: LoginResponse) {
+    localStorage.setItem('authToken', res.access_token);
+    this._isAuthenticated.next(true);
+    this._currentUser.next(res.user);
+  }
+
+  /** Internal: clear everything */
+  private clearSession() {
+    localStorage.removeItem('authToken');
+    this._isAuthenticated.next(false);
+    this._currentUser.next(null);
   }
 }

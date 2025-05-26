@@ -1,32 +1,73 @@
 <div class="container mt-5">
   <div class="card profile-card shadow-lg">
     <div class="card-body text-center">
+
+      <!-- Imagen de perfil y overlay (igual que antes) -->
       <div class="profile-img-container position-relative d-inline-block mb-3">
         <img [src]="profileImageUrl" alt="Foto de perfil" class="profile-img mb-3">
-        <!-- Overlay para cambiar la foto -->
         <div class="edit-photo-overlay" (click)="fileInput.click()">
           <i class="bi bi-camera-fill"></i>
           <span>Cambiar</span>
         </div>
-        <!-- Input de archivo oculto -->
         <input type="file" #fileInput (change)="onFileSelected($event)" class="d-none">
       </div>
-      <h3 class="card-title">{{ user?.name }}</h3>
-      <p class="card-text text-muted">{{ user?.email }}</p>
-      <p class="card-text">
-        <small class="text-muted">Miembro desde: {{ user?.created_at | date:'mediumDate' }}</small>
-      </p>
-      <!-- Botón para actualizar la foto, visible solo si se ha seleccionado un archivo -->
+
+      <!-- Texto estático o formulario según modo -->
+      <ng-container *ngIf="!isEditing; else editForm">
+        <h3 class="card-title">{{ user.name }}</h3>
+        <p class="card-text text-muted">{{ user.email }}</p>
+        <button class="btn btn-outline-primary btn-sm" (click)="toggleEdit()">
+          Editar perfil
+        </button>
+      </ng-container>
+
+      <ng-template #editForm>
+        <form (ngSubmit)="saveProfile()" [formGroup]="profileForm" class="mb-3">
+          <div class="mb-2">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              placeholder="Nombre"
+              [class.is-invalid]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+            >
+            <div class="invalid-feedback">El nombre es obligatorio.</div>
+          </div>
+          <div class="mb-2">
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Correo"
+              [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+            >
+            <div class="invalid-feedback">Introduce un correo válido.</div>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm me-2" [disabled]="profileForm.invalid">
+            Guardar
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="toggleEdit()">
+            Cancelar
+          </button>
+        </form>
+      </ng-template>
+
+      <!-- Botón para actualizar foto (si hay archivo pendiente) -->
       <div *ngIf="selectedFile" class="mt-2">
-        <button class="btn btn-primary btn-sm" (click)="updateProfilePhoto()">Actualizar Foto</button>
+        <button class="btn btn-primary btn-sm" (click)="updateProfilePhoto()">
+          Actualizar Foto
+        </button>
       </div>
-      <!-- Botón para cerrar sesión -->
+
+      <!-- Logout -->
       <div *ngIf="isLoggedIn" class="mt-3">
-        <button class="btn btn-danger" (click)="logout()">Logout</button>
+        <button class="btn btn-danger btn-sm" (click)="logout()">Cerrar sesión</button>
       </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+
     </div>
-  </div>
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3 text-center">
-    {{ errorMessage }}
   </div>
 </div>

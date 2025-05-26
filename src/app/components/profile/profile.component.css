@@ -5,44 +5,39 @@
 .profile-card {
   border: none;
   border-radius: 15px;
-  overflow: hidden;
   background-color: #ffffff;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .profile-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* Contenedor de imagen de perfil */
+/* Contenedor de imagen */
 .profile-img-container {
   position: relative;
   display: inline-block;
 }
-
-/* Imagen de perfil */
 .profile-img {
   width: 150px;
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
-  border: 4px solid #227093; /* Color primario */
+  border: 4px solid #227093;
   transition: transform 0.3s ease;
 }
-
 .profile-img-container:hover .profile-img {
   transform: scale(1.05);
 }
 
-/* Overlay para editar foto */
+/* Overlay editar foto */
 .edit-photo-overlay {
   position: absolute;
   bottom: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #ffffff;
+  background-color: rgba(0,0,0,0.6);
+  color: #fff;
   padding: 5px 10px;
   border-radius: 20px;
   cursor: pointer;
@@ -53,7 +48,46 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 }
+.profile-img-container:hover .edit-photo-overlay {
+  opacity: 1;
+}
 
+/* Ajustes para el formulario */
+.form-label {
+  font-weight: 500;
+}
+.is-invalid {
+  border-color: #dc3545;
+}
+.invalid-feedback {
+  display: block;
+}
+
+/* Espaciado entre botones */
+.btn-sm {
+  min-width: 120px;
+}
+
+
+/* reutiliza tus estilos anteriores... */
+
+.edit-photo-overlay {
+  /* sólo visible en modo edición */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 .profile-img-container:hover .edit-photo-overlay {
   opacity: 1;
 }

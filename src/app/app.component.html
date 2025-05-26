@@ -1,21 +1,22 @@
-<!-- src/app/app.component.html -->
 <header *ngIf="showHeader">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <img src="../assets/circleup-logo-blue.png" alt="CircleUp Logo" class="logo"/>
-      <a class="navbar-brand" routerLink="/groups">CircleUp </a>
+      <img src="assets/circleup-logo-blue.png" alt="CircleUp Logo" class="logo"/>
+      <a class="navbar-brand" routerLink="/groups">CircleUp</a>
+
+      <!-- Toggler controlado por Angular -->
       <button
         class="navbar-toggler"
         type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
         aria-label="Toggle navigation"
+        (click)="toggleNavbar()"
+        [attr.aria-expanded]="!isCollapsed"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- Collapse controlado por Angular -->
+      <div class="collapse navbar-collapse" [class.show]="!isCollapsed" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" routerLink="/groups" routerLinkActive="active">Grupos</a>
@@ -32,11 +33,9 @@
           <li class="nav-item" *ngIf="isLoggedIn">
             <a class="nav-link" routerLink="/my-likes" routerLinkActive="active">Me gusta</a>
           </li>
-
           <li class="nav-item" *ngIf="isLoggedIn">
-            <a class="nav-link" routerLink="/saved">Guardados</a>
+            <a class="nav-link" routerLink="/saved" routerLinkActive="active">Guardados</a>
           </li>
-
           <li class="nav-item" *ngIf="isLoggedIn">
             <a class="nav-link" routerLink="/profile" routerLinkActive="active">
               <img
