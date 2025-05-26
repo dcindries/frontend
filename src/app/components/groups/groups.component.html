@@ -2,85 +2,105 @@
 <div class="container group-page">
   <!-- Search & Actions -->
   <div class="search-actions mb-5">
-    <!-- ... tu código de búsqueda ... -->
+    <div class="search-wrapper">
+      <input
+        type="text"
+        class="form-control search-input"
+        [formControl]="qControl"
+        placeholder="Buscar grupos por nombre…"
+      />
+      <div *ngIf="searchResults.length && qControl.value" class="search-results-popup">
+        <ul>
+          <li *ngFor="let group of searchResults" (click)="goToGroup(group.id)">
+            {{ group.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="actions">
+      <form [formGroup]="joinCodeForm" class="join-form">
+        <input
+          type="text"
+          class="join-code-input"
+          [formControl]="codeControl"
+          placeholder="Código de acceso"
+        />
+        <button type="button" class="btn-join" (click)="joinByCode()">
+          <i class="bi bi-key-fill"></i> Unirse
+        </button>
+      </form>
+    </div>
   </div>
 
   <!-- Notifications -->
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-  <!-- Recent Posts (Masonry) -->
-  <section class="posts-section mb-5">
-    <h2 class="section-title">Publicaciones Recientes</h2>
-    <div class="posts-masonry">
-      <div *ngFor="let post of recentPosts" class="masonry-item">
-        <div class="post-card">
-          <!-- Imagen y badge de grupo -->
-          <div class="post-image-wrapper" *ngIf="post.image_path">
-            <img [src]="post.image_path" alt="Imagen del post" />
-            <a [routerLink]="['/groups', post.group_id]" class="group-badge">
-              {{ post.groupName }}
-            </a>
-          </div>
+ <!-- Recent Posts (Masonry) -->
+<section class="posts-section mb-5">
+  <h2 class="section-title">Publicaciones Recientes</h2>
+  <div class="posts-masonry">
+    <div *ngFor="let post of recentPosts" class="masonry-item">
+      <div class="post-card">
+        <!-- Imagen y badge de grupo -->
+        <div class="post-image-wrapper" *ngIf="post.image_path">
+          <img [src]="post.image_path" alt="Imagen del post" />
+          <a [routerLink]="['/groups', post.group_id]" class="group-badge">
+            {{ post.groupName }}
+          </a>
+        </div>
 
-          <!-- Contenido -->
-          <div class="post-content p-3">
-            <p>{{ post.content }}</p>
+        <!-- Contenido -->
+        <div class="post-content p-3">
+          <p>{{ post.content }}</p>
 
-            <!-- Fecha siempre visible -->
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <small class="text-muted">
-                Publicado · {{ post.created_at | date:'short' }}
-              </small>
+          <!-- Aquí añadimos actions: fecha, likes y guardar -->
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">
+              Publicado · {{ post.created_at | date:'short' }}
+            </small>
 
-              <!-- Solo para usuarios logueados: like y guardar -->
-              <div class="d-flex align-items-center" *ngIf="isLoggedIn">
-                <!-- Like Button -->
-                <button
-                  class="btn btn-link btn-like"
-                  [ngClass]="{ liked: likedPosts.has(post.id) }"
-                  (click)="toggleLike(post)"
-                >
-                  <i
-                    class="bi"
-                    [ngClass]="
-                      likedPosts.has(post.id)
-                        ? 'bi-heart-fill text-danger'
-                        : 'bi-heart'
-                    "
-                  ></i>
-                  <span class="like-count">{{ post.likes || 0 }}</span>
-                </button>
+            <div class="d-flex align-items-center">
+              <!-- Like Button -->
+<div class="d-flex align-items-center" *ngIf="isLoggedIn">
+  <!-- Like Button -->
+      <button
+        class="btn btn-link btn-like"
+        [ngClass]="{ liked: likedPosts.has(post.id) }"
+        (click)="toggleLike(post)"
+      >
+        <i
+          class="bi"
+          [ngClass]="
+            likedPosts.has(post.id)
+              ? 'bi-heart-fill text-danger'
+              : 'bi-heart'
+          "
+        ></i>
+        <span class="like-count">{{ post.likes || 0 }}</span>
+      </button>
 
-                <!-- Save Button -->
-                <button
-                  class="btn btn-link p-0"
-                  (click)="toggleSave(post)"
-                  [title]="
-                    savedPosts.has(post.id)
-                      ? 'Quitar de guardados'
-                      : 'Guardar publicación'
-                  "
-                >
-                  <i
-                    class="bi"
-                    [ngClass]="
-                      savedPosts.has(post.id)
+      <!-- Save Button -->
+      <button class="btn btn-link p-0" (click)="toggleSave(post)"
+              [title]=" savedPosts.has(post.id)
+                        ? 'Quitar de guardados'
+                        : 'Guardar publicación' ">
+        <i class="bi"
+          [ngClass]=" savedPosts.has(post.id)
                         ? 'bi-bookmark-fill text-primary'
-                        : 'bi-bookmark'
-                    "
-                    style="font-size: 1.2rem;"
-                  ></i>
-                </button>
-              </div>
+                        : 'bi-bookmark' "
+          style="font-size: 1.2rem;"></i>
+      </button>
+    </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Featured Groups (siempre visibles) -->
+  <!-- Featured Groups -->
   <section class="featured-section">
     <h2 class="section-title">Grupos Destacados</h2>
     <div class="row g-3">
@@ -95,9 +115,9 @@
               <i class="bi bi-people-fill me-1"></i>
               Socios: {{ group.members_count || 0 }}
             </small>
-            <a [routerLink]="['/groups', group.id]" class="btn btn-sm btn-outline-primary">
-              Ver
-            </a>
+              <a *ngIf="isLoggedIn" [routerLink]="['/groups', group.id]" class="btn btn-sm btn-outline-primary">
+                Ver
+              </a>
           </div>
         </div>
       </div>

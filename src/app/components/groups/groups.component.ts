@@ -1,22 +1,14 @@
 // src/app/components/groups/groups.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  map,
-  filter,
-  take
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, map, filter, take } from 'rxjs/operators';
 
 import { GroupsService } from '../../services/groups.service';
 import { PostsService } from '../../services/posts.service';
 import { AuthService, User } from '../../services/auth.service';
-import { LikesService } from '../../services/likes.service';
-import { SavedPostsService } from '../../services/saved-posts.service';
+import { LikesService } from '../../services/likes.service';                // ← añadido
+import { SavedPostsService } from '../../services/saved-posts.service';   // ← añadido
 
 interface Group {
   id: number;
@@ -24,6 +16,7 @@ interface Group {
   description?: string;
   is_public: boolean;
   members_count?: number;
+  
 }
 
 interface Post {
@@ -52,8 +45,8 @@ export class GroupsComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  likedPosts = new Set<number>();
-  savedPosts = new Set<number>();
+  likedPosts = new Set<number>();   // ← añadido
+  savedPosts = new Set<number>();   // ← añadido
 
   constructor(
     private fb: FormBuilder,
@@ -61,54 +54,47 @@ export class GroupsComponent implements OnInit {
     private postsService: PostsService,
     private auth: AuthService,
     private router: Router,
-    private likesService: LikesService,
-    private savedPostsService: SavedPostsService
+    private likesService: LikesService,               // ← añadido
+    private savedPostsService: SavedPostsService     // ← añadido
   ) {}
 
-  ngOnInit(): void {
-    this.initComponent();
+ngOnInit(): void {
+  this.auth.currentUser$
+    .pipe(take(1))
+    .subscribe(user => {
+      if (user && user.email === 'admin@gmail.com') {
+        this.router.navigate(['/admin/users'], { replaceUrl: true });
+      } else {
+        this.isLoggedIn = !!user;
+        this.initComponent();
+      }
+    });
+}
 
-    // redirige admin
-    this.auth.currentUser$
-      .pipe(filter((u): u is User => u !== null), take(1))
-      .subscribe(user => {
-        if (user.email === 'admin@gmail.com') {
-          this.router.navigate(['/admin/users'], { replaceUrl: true });
-        }
-      });
-  }
 
   private initComponent(): void {
     this.searchForm = this.fb.group({ q: [''] });
     this.joinCodeForm = this.fb.group({ code: [''] });
 
-    this.auth.isAuthenticated$.subscribe(logged => {
-      this.isLoggedIn = logged;
-      if (logged) {
-        this.loadMyLikes();
-        this.loadMySaved();
-      }
-    });
+    this.auth.isAuthenticated$.subscribe((v: boolean) => this.isLoggedIn = v);
 
-    this.qControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((term: string) =>
-          this.groupsService.getGroups().pipe(
-            map((all: Group[]) =>
-              all.filter((g: Group) =>
-                g.is_public &&
-                term.trim() !== '' &&
-                g.name.toLowerCase().includes(term.trim().toLowerCase())
-              )
-            )
-          )
+    this.qControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((term: string) =>
+        this.groupsService.getGroups().pipe(
+          map((all: Group[]) => all.filter(g =>
+            g.is_public && term.trim() !== '' && g.name.toLowerCase().includes(term.trim().toLowerCase())
+          ))
         )
       )
-      .subscribe((results: Group[]) => (this.searchResults = results));
+    ).subscribe((results: Group[]) => this.searchResults = results);
 
     this.fetchGroups();
+
+    // inicializar likes y guardados
+    this.loadMyLikes();       // ← añadido
+    this.loadMySaved();       // ← añadido
   }
 
   get qControl(): FormControl {
@@ -123,13 +109,12 @@ export class GroupsComponent implements OnInit {
     this.groupsService.getGroups().subscribe({
       next: (all: Group[]) => {
         const term = search.trim().toLowerCase();
-        this.groups = all.filter((g: Group) =>
-          g.is_public && (!term || g.name.toLowerCase().includes(term))
-        );
+        this.groups = all
+          .filter(g => g.is_public && (!term || g.name.toLowerCase().includes(term)));
         this.pickFeaturedGroups();
         this.fetchRecentPosts();
       },
-      error: e => {
+      error: (e: any) => {
         console.error('Error cargando grupos:', e);
         this.errorMessage = 'No se pudieron cargar los grupos.';
       }
@@ -138,22 +123,15 @@ export class GroupsComponent implements OnInit {
 
   fetchRecentPosts(): void {
     this.postsService.getPosts().subscribe({
-      next: (posts: Post[]) => {
+      next: posts => {
         const publicIds = new Set(this.groups.map(g => g.id));
         this.recentPosts = posts
           .filter((p: Post) => publicIds.has(p.group_id))
-          .sort(
-            (a: Post, b: Post) =>
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          )
+          .sort((a: Post, b: Post) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 12)
           .map((p: Post) => {
             const grp = this.groups.find(g => g.id === p.group_id)!;
-            return {
-              ...p,
-              groupName: grp.name,
-              authorName: p.author?.name ?? 'Anónimo'
-            };
+            return { ...p, groupName: grp.name, authorName: p.author?.name ?? 'Anónimo' };
           });
       },
       error: err => console.error('Error cargando posts:', err)
@@ -161,9 +139,7 @@ export class GroupsComponent implements OnInit {
   }
 
   pickFeaturedGroups(): void {
-    this.featuredGroups = [...this.groups]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 6);
+    this.featuredGroups = [...this.groups].sort(() => Math.random() - 0.5).slice(0, 6);
   }
 
   goToCreateGroup(): void {
@@ -196,6 +172,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
+  // ————— añadido: carga mis likes —————
   private loadMyLikes(): void {
     this.likesService.getMyLikes().subscribe({
       next: myLikes => myLikes.forEach(like => this.likedPosts.add(like.id)),
@@ -203,6 +180,7 @@ export class GroupsComponent implements OnInit {
     });
   }
 
+  // ————— añadido: carga mis guardados —————
   private loadMySaved(): void {
     this.savedPostsService.getMySaved().subscribe({
       next: entries => entries.forEach(e => this.savedPosts.add(e.post.id)),
@@ -210,13 +188,13 @@ export class GroupsComponent implements OnInit {
     });
   }
 
-  toggleLike(post: Post & { likes?: number }): void {
-    if (!this.isLoggedIn) return;
-    const action$ = this.likedPosts.has(post.id)
+  // ————— añadido: toggle like —————
+  toggleLike(post: any): void {
+    const fn = this.likedPosts.has(post.id)
       ? this.likesService.unlikePost(post.id)
       : this.likesService.likePost(post.id);
 
-    action$.subscribe(res => {
+    fn.subscribe(res => {
       post.likes = res.likes;
       if (this.likedPosts.has(post.id)) {
         this.likedPosts.delete(post.id);
@@ -226,13 +204,13 @@ export class GroupsComponent implements OnInit {
     });
   }
 
-  toggleSave(post: Post): void {
-    if (!this.isLoggedIn) return;
-    const action$ = this.savedPosts.has(post.id)
+  // ————— añadido: toggle save —————
+  toggleSave(post: any): void {
+    const fn = this.savedPosts.has(post.id)
       ? this.savedPostsService.unsavePost(post.id)
       : this.savedPostsService.savePost(post.id);
 
-    action$.subscribe({
+    fn.subscribe({
       next: () => {
         if (this.savedPosts.has(post.id)) {
           this.savedPosts.delete(post.id);
